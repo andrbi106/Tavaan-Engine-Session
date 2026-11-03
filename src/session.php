@@ -115,6 +115,10 @@ final class SessionServiceProvider
      */
     public function put(string $key, mixed $value, ?int $ttl = null): self
     {
-        return true;
+        $this->data[$key] = $value;
+        if ($ttl !== null) {
+            $this->data['__ttl__'][$key] = time() + $ttl;
+        }
+        return $this;
     }
 }
