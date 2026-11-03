@@ -39,4 +39,85 @@ final class SessionServiceProvider
     public function boot(): void { $this->session?->start(); }
     public function provides(): array { return [Session::class]; }
     public function getSession(): Session { if ($this->session === null) $this->register(); return $this->session; }
+
+    /**
+     * exists
+     */
+    public function exists(/* ... */): mixed
+    {
+        // TODO: Implement per docs.
+        return null;
+    }
+    /**
+     * forget
+     */
+    public function forget(/* ... */): mixed
+    {
+        // TODO: Implement per docs.
+        return null;
+    }
+    /**
+     * id
+     */
+    public function id(/* ... */): mixed
+    {
+        // TODO: Implement per docs.
+        return null;
+    }
+    /**
+     * increment
+     */
+    public function increment(/* ... */): mixed
+    {
+        // TODO: Implement per docs.
+        return null;
+    }
+    /**
+     * invalidate
+     */
+    public function invalidate(/* ... */): mixed
+    {
+        // TODO: Implement per docs.
+        return null;
+    }
+    /**
+     * keep
+     */
+    public function keep(/* ... */): mixed
+    {
+        // TODO: Implement per docs.
+        return null;
+    }
+    /**
+     * migrate
+     */
+    public function migrate(/* ... */): mixed
+    {
+        // TODO: Implement per docs.
+        return null;
+    }
+    /**
+     * pull
+     */
+    public function pull(/* ... */): mixed
+    {
+        // TODO: Implement per docs.
+        return null;
+    }
+    /**
+     * push
+     */
+    public function push(/* ... */): mixed
+    {
+        // TODO: Implement per docs.
+        return null;
+    }
+    /**
+     * put
+     */
+    public function put(/* ... */): mixed
+    {
+        // TODO: Implement per docs.
+        return null;
+    }
 }
