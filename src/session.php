@@ -53,21 +53,21 @@ final class SessionServiceProvider
      */
     public function forget(/* ... */): mixed
     {
-        unset(\$this->listeners[\$event]);
+        unset($this->listeners[$event]);
     }
     /**
      * id
      */
     public function id(/* ... */): mixed
     {
-        return \$this->user['id'] ?? null;
+        return $this->user['id'] ?? null;
     }
     /**
      * increment
      */
     public function increment(/* ... */): mixed
     {
-        \$this->connection->update('UPDATE ' . \$this->table . ' SET ' . \$column . ' = ' . \$column . ' + ?', [\$amount]); return \$this;
+        $this->connection->update('UPDATE ' . $this->table . ' SET ' . $column . ' = ' . $column . ' + ?', [$amount]); return $this;
     }
     /**
      * invalidate
@@ -106,7 +106,7 @@ final class SessionServiceProvider
      */
     public function push(/* ... */): mixed
     {
-        return \$this->save();
+        return $this->save();
     }
     /**
      * put
