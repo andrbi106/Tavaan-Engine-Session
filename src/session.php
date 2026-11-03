@@ -71,23 +71,30 @@ final class SessionServiceProvider
     /**
      * invalidate
      */
-    public function invalidate()
+    public function invalidate(): void
     {
-        return null;
+        $this->data = [];
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            session_destroy();
+        }
     }
     /**
      * keep
      */
-    public function keep()
+    public function keep(array $keys): void
     {
-        return null;
+        foreach ($keys as $key) {
+            if (isset($this->data["__flash__"][$key])) {
+                $this->data["__flash__next"][$key] = $this->data["__flash__"][$key];
+            }
+        }
     }
     /**
      * migrate
      */
-    public function migrate()
+    public function migrate(bool $destroy = false): void
     {
-        return null;
+        $this->regenerate($destroy);
     }
     /**
      * pull
