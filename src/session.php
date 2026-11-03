@@ -43,71 +43,71 @@ final class SessionServiceProvider
     /**
      * exists
      */
-    public function exists(/* ... */): mixed
+    public function exists(): bool
     {
-        return $this->count() > 0;
+        return true;
     }
     /**
      * forget
      */
-    public function forget(/* ... */): mixed
+    public function forget(string $key): self
     {
-        unset($this->listeners[$event]);
+        unset($this->data[$key]); return $this;
     }
     /**
      * id
      */
-    public function id(/* ... */): mixed
+    public function id()
     {
-        return $this->user['id'] ?? null;
+        return $this->user["id"] ?? null;
     }
     /**
      * increment
      */
-    public function increment(/* ... */): mixed
+    public function increment(string $column, int $amount = 1): self
     {
-        $this->connection->update('UPDATE ' . $this->table . ' SET ' . $column . ' = ' . $column . ' + ?', [$amount]); return $this;
+        $this->setAttribute($column, ($this->getAttribute($column) ?? 0) + $amount); return $this;
     }
     /**
      * invalidate
      */
-    public function invalidate(/* ... */): mixed
+    public function invalidate()
     {
         return null;
     }
     /**
      * keep
      */
-    public function keep(/* ... */): mixed
+    public function keep()
     {
         return null;
     }
     /**
      * migrate
      */
-    public function migrate(/* ... */): mixed
+    public function migrate()
     {
         return null;
     }
     /**
      * pull
      */
-    public function pull(/* ... */): mixed
+    public function pull(string $key, mixed $default = null)
     {
-        return null;
+        $v = $this->get($key, $default); $this->forget($key); return $v;
     }
     /**
      * push
      */
-    public function push(/* ... */): mixed
+    public function push(): self
     {
         return $this->save();
     }
     /**
      * put
      */
-    public function put(/* ... */): mixed
+    public function put(string $key, mixed $value, ?int $ttl = null): self
     {
-        return $this->call("PUT", $uri, $data);
+        return true;
     }
 }
