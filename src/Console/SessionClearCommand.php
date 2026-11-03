@@ -9,7 +9,7 @@ use Tavaan\Core\Contracts\Console\CommandInterface;
 /**
  * session:clear command.
  */
-final class Session_clearCommand implements CommandInterface
+final class SessionClearCommand implements CommandInterface
 {
     public function name(): string
     {
