@@ -45,8 +45,7 @@ final class SessionServiceProvider
      */
     public function exists(/* ... */): mixed
     {
-        // TODO: Implement per docs.
-        return null;
+        return $this->count() > 0;
     }
     /**
      * forget
@@ -113,7 +112,6 @@ final class SessionServiceProvider
      */
     public function put(/* ... */): mixed
     {
-        // TODO: Implement per docs.
-        return null;
+        return $this->call("PUT", $uri, $data);
     }
 }
