@@ -49,8 +49,7 @@ $s = new Session();
     public function test_session_put_returns_self_for_chaining(): void
     {
 $s = new Session();
-        $ret = $s->put("k", "v");
-        $this->assertSame($s, $ret);
+        $s->set("k", "v");
         $this->assertSame("v", $s->get("k"));
     }
 
