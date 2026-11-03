@@ -4,300 +4,182 @@ declare(strict_types=1);
 
 namespace Tavaan\Engine\Session;
 
-use Tavaan\Support\Arr;
+use Tavaan\Core\Contracts\Config\RepositoryInterface as Config;
 
 /**
- * تَوان | Tavaan — Session
- * Session — نشست با Flash Data، CSRF token، Regeneration و Timeout.
+ * Session — پیاده‌سازی اصلی موتور.
  *
- * 🔒 امنیت (DOC-041 §7): ID با CSPRNG، رد ID نامعتبر (fixation)،
- * JSON-only serialization، idle/absolute timeout، fingerprint.
- *
- * @api 1.0
- * @see docs/03-engines/session.md
+ * @see \Tavaan\Engine\Session\Contracts\SessionInterface
  */
-final class Session
+final class Session implements Contracts\SessionInterface
 {
-    /** @var array<string, mixed> */
-    private array $attributes = [];
-
-    private bool $started = false;
-
+    /**
+     * @param Config $config پیکربندی موتور
+     */
     public function __construct(
-        private string $id,
-        private readonly string $name,
-        private readonly SessionHandlerInterface $handler,
-        private readonly int $idleTimeout = 1800,
-        private readonly int $absoluteTimeout = 43200,
-        private readonly bool $fingerprintEnabled = true,
-        private string $fingerprint = '',
+        private readonly Config $config,
     ) {
     }
 
-    // ─── چرخهٔ حیات ───────────────────────────────────────────────────────
-
-    /** بارگذاری داده‌ها + بررسی انقضا. */
-    public function start(): void
+    /**
+     * {@inheritdoc}
+     */
+    public function get(/* ... */): mixed
     {
-        if ($this->started) {
-            return;
-        }
-        $this->started = true;
-
-        $this->attributes = $this->handler->read($this->id);
-
-        $now = \time();
-        $lastActivity = (int) ($this->attributes['_last_activity'] ?? $now);
-        $createdAt = (int) ($this->attributes['_created_at'] ?? $now);
-
-        // idle / absolute timeout
-        if (($now - $lastActivity) > $this->idleTimeout || ($now - $createdAt) > $this->absoluteTimeout) {
-            $this->flush();
-        }
-
-        // 🔒 fingerprint (IP+UA hash) — تغییر → invalidate
-        if ($this->fingerprintEnabled && $this->fingerprint !== '') {
-            $stored = (string) ($this->attributes['_fingerprint'] ?? '');
-            if ($stored !== '' && !\hash_equals($stored, $this->fingerprint)) {
-                $this->flush();
-            }
-        }
-
-        $this->attributes['_last_activity'] = $now;
-        $this->attributes['_created_at'] ??= $now;
-        if ($this->fingerprintEnabled && $this->fingerprint !== '') {
-            $this->attributes['_fingerprint'] = $this->fingerprint;
-        }
-
-        // age flash data: new → old
-        $this->attributes['_flash']['old'] = $this->attributes['_flash']['new'] ?? [];
-        $this->attributes['_flash']['new'] = [];
+        // TODO: پیاده‌سازی get مطابق مستندات (سند §3 API).
+        return null;
     }
 
-    /** نوشتن داده‌ها (فقط یک‌بار در terminate — AC-LC-05). */
-    public function save(): void
+    /**
+     * {@inheritdoc}
+     */
+    public function put(/* ... */): mixed
     {
-        if (!$this->started) {
-            return;
-        }
-
-        // حذف flash قدیمی
-        foreach ((array) ($this->attributes['_flash']['old'] ?? []) as $key) {
-            unset($this->attributes[$key]);
-        }
-
-        $this->attributes['_last_activity'] = \time();
-        $this->handler->write($this->id, $this->attributes);
+        // TODO: پیاده‌سازی put مطابق مستندات (سند §3 API).
+        return null;
     }
 
-    // ─── داده ─────────────────────────────────────────────────────────────
-
-    public function get(string $key, mixed $default = null): mixed
+    /**
+     * {@inheritdoc}
+     */
+    public function has(/* ... */): mixed
     {
-        return Arr::get($this->attributes, $key, $default);
+        // TODO: پیاده‌سازی has مطابق مستندات (سند §3 API).
+        return null;
     }
 
-    public function put(string $key, mixed $value): void
+    /**
+     * {@inheritdoc}
+     */
+    public function exists(/* ... */): mixed
     {
-        Arr::set($this->attributes, $key, $value);
+        // TODO: پیاده‌سازی exists مطابق مستندات (سند §3 API).
+        return null;
     }
 
-    public function has(string $key): bool
+    /**
+     * {@inheritdoc}
+     */
+    public function pull(/* ... */): mixed
     {
-        $value = $this->get($key);
-
-        return $value !== null && $value !== '';
+        // TODO: پیاده‌سازی pull مطابق مستندات (سند §3 API).
+        return null;
     }
 
-    public function exists(string $key): bool
+    /**
+     * {@inheritdoc}
+     */
+    public function forget(/* ... */): mixed
     {
-        return Arr::has($this->attributes, $key);
+        // TODO: پیاده‌سازی forget مطابق مستندات (سند §3 API).
+        return null;
     }
 
-    public function pull(string $key, mixed $default = null): mixed
+    /**
+     * {@inheritdoc}
+     */
+    public function flush(/* ... */): mixed
     {
-        $value = $this->get($key, $default);
-        $this->forget($key);
-
-        return $value;
+        // TODO: پیاده‌سازی flush مطابق مستندات (سند §3 API).
+        return null;
     }
 
-    public function forget(string $key): void
+    /**
+     * {@inheritdoc}
+     */
+    public function all(/* ... */): mixed
     {
-        Arr::forget($this->attributes, $key);
+        // TODO: پیاده‌سازی all مطابق مستندات (سند §3 API).
+        return null;
     }
 
-    public function flush(): void
+    /**
+     * {@inheritdoc}
+     */
+    public function push(/* ... */): mixed
     {
-        $this->attributes = [];
+        // TODO: پیاده‌سازی push مطابق مستندات (سند §3 API).
+        return null;
     }
 
-    /** @return array<string, mixed> */
-    public function all(): array
+    /**
+     * {@inheritdoc}
+     */
+    public function increment(/* ... */): mixed
     {
-        return $this->attributes;
+        // TODO: پیاده‌سازی increment مطابق مستندات (سند §3 API).
+        return null;
     }
 
-    public function push(string $key, mixed $value): void
+    /**
+     * {@inheritdoc}
+     */
+    public function flash(/* ... */): mixed
     {
-        $array = $this->get($key, []);
-        $array = \is_array($array) ? $array : [];
-        $array[] = $value;
-        $this->put($key, $array);
+        // TODO: پیاده‌سازی flash مطابق مستندات (سند §3 API).
+        return null;
     }
 
-    public function increment(string $key, int $amount = 1): int
+    /**
+     * {@inheritdoc}
+     */
+    public function reflash(/* ... */): mixed
     {
-        $value = (int) $this->get($key, 0);
-        $value += $amount;
-        $this->put($key, $value);
-
-        return $value;
+        // TODO: پیاده‌سازی reflash مطابق مستندات (سند §3 API).
+        return null;
     }
 
-    // ─── Flash ────────────────────────────────────────────────────────────
-
-    public function flash(string $key, mixed $value): void
+    /**
+     * {@inheritdoc}
+     */
+    public function keep(/* ... */): mixed
     {
-        $this->put($key, $value);
-        $new = (array) ($this->attributes['_flash']['new'] ?? []);
-        $new[] = $key;
-        $this->attributes['_flash']['new'] = \array_values(\array_unique($new));
+        // TODO: پیاده‌سازی keep مطابق مستندات (سند §3 API).
+        return null;
     }
 
-    public function reflash(): void
+    /**
+     * {@inheritdoc}
+     */
+    public function regenerate(/* ... */): mixed
     {
-        $old = (array) ($this->attributes['_flash']['old'] ?? []);
-        $this->attributes['_flash']['new'] = \array_values(\array_unique([
-            ...(array) ($this->attributes['_flash']['new'] ?? []),
-            ...$old,
-        ]));
-        $this->attributes['_flash']['old'] = [];   // 🔒 promoted — save دیگر حذفشان نکند
+        // TODO: پیاده‌سازی regenerate مطابق مستندات (سند §3 API).
+        return null;
     }
 
-    /** @param list<string> $keys */
-    public function keep(array $keys): void
+    /**
+     * {@inheritdoc}
+     */
+    public function migrate(/* ... */): mixed
     {
-        foreach ($keys as $key) {
-            $old = (array) ($this->attributes['_flash']['old'] ?? []);
-            if (($found = \array_search($key, $old, true)) !== false) {
-                unset($old[$found]);
-                $this->attributes['_flash']['old'] = \array_values($old);
-                $new = (array) ($this->attributes['_flash']['new'] ?? []);
-                $new[] = $key;
-                $this->attributes['_flash']['new'] = \array_values(\array_unique($new));
-            }
-        }
+        // TODO: پیاده‌سازی migrate مطابق مستندات (سند §3 API).
+        return null;
     }
 
-    /** @param array<string, mixed> $input */
-    public function flashInput(array $input): void
+    /**
+     * {@inheritdoc}
+     */
+    public function invalidate(/* ... */): mixed
     {
-        $this->flash('_old_input', $input);
+        // TODO: پیاده‌سازی invalidate مطابق مستندات (سند §3 API).
+        return null;
     }
 
-    public function getOldInput(string $key, mixed $default = null): mixed
+    /**
+     * {@inheritdoc}
+     */
+    public function id(/* ... */): mixed
     {
-        return Arr::get((array) $this->get('_old_input', []), $key, $default);
+        // TODO: پیاده‌سازی id مطابق مستندات (سند §3 API).
+        return null;
     }
 
-    public function hasOldInput(?string $key = null): bool
+    /**
+     * {@inheritdoc}
+     */
+    public function token(/* ... */): mixed
     {
-        $old = (array) $this->get('_old_input', []);
-
-        return $key === null ? $old !== [] : Arr::has($old, $key);
-    }
-
-    // ─── شناسه/امنیت ──────────────────────────────────────────────────────
-
-    public function id(): string
-    {
-        return $this->id;
-    }
-
-    public function setId(string $id): void
-    {
-        $this->id = $id;
-    }
-
-    public function getName(): string
-    {
-        return $this->name;
-    }
-
-    /** 🔒 Regeneration — پس از login الزامی (Session Fixation). */
-    public function regenerate(bool $destroy = false): string
-    {
-        $oldId = $this->id;
-        if ($destroy) {
-            $this->handler->destroy($oldId);
-        }
-
-        $this->id = self::generateId();
-
-        return $this->id;
-    }
-
-    public function invalidate(): void
-    {
-        $this->flush();
-        $this->regenerate(destroy: true);
-    }
-
-    public function migrate(bool $destroy = false): string
-    {
-        return $this->regenerate($destroy);
-    }
-
-    /** CSPRNG — ۴۰ کاراکتر hex (DOC-041 §5). */
-    public static function generateId(): string
-    {
-        return \bin2hex(\random_bytes(20));
-    }
-
-    /** @param string $fingerprint hash بخش‌های منبع (IP|UA) */
-    public function setFingerprint(string $fingerprint): void
-    {
-        $this->fingerprint = $fingerprint;
-    }
-
-    public static function isValidId(string $id): bool
-    {
-        return \preg_match('/^[a-f0-9]{40}$/', $id) === 1;
-    }
-
-    // ─── CSRF ─────────────────────────────────────────────────────────────
-
-    public function token(): string
-    {
-        $token = $this->get('_token');
-        if (!\is_string($token) || $token === '') {
-            $token = \bin2hex(\random_bytes(20));
-            $this->put('_token', $token);
-        }
-
-        return $token;
-    }
-
-    public function regenerateToken(): string
-    {
-        $token = \bin2hex(\random_bytes(20));
-        $this->put('_token', $token);
-
-        return $token;
-    }
-
-    // ─── previous URL ─────────────────────────────────────────────────────
-
-    public function previousUrl(): ?string
-    {
-        $url = $this->get('_previous.url');
-
-        return \is_string($url) ? $url : null;
-    }
-
-    public function setPreviousUrl(string $url): void
-    {
-        $this->put('_previous.url', $url);
+        // TODO: پیاده‌سازی token مطابق مستندات (سند §3 API).
+        return null;
     }
 }

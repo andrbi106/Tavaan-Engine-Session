@@ -2,31 +2,59 @@
 
 declare(strict_types=1);
 
-/*
- * پیکربندی نشست — DOC-041 §6
+/*|--------------------------------------------------------------------------
+ | Session Engine Configuration
+ |--------------------------------------------------------------------------
+ |
+ | پیکربندی موتور session — همهٔ کلیدهای مستندشده در `docs/03-engines/session.md` بخش «پیکربندی».
+ |
+ |@see https://github.com/Derogaramin/Tavaan-Doc/blob/main/docs/03-engines/session.md
  */
 
 return [
-    'driver'   => env_string('TVN_SESSION_DRIVER', 'file'),   // file|cookie|array (database|redis در M3/M4)
-    'lifetime' => env_int('TVN_SESSION_LIFETIME', 120),       // دقیقه
-    'expire_on_close' => false,
-    'lottery'  => [2, 100],
-    'cookie'   => env_string('TVN_SESSION_COOKIE', 'tavaan_session'),
-    'files'    => storage_path('framework/sessions'),
-    'path'     => '/',
-    'domain'   => env_string('TVN_SESSION_DOMAIN', ''),
-    'secure'   => env_bool('TVN_SESSION_SECURE', false),      // 🔒 در prod: true
-    'http_only' => true,
-    'same_site' => env_string('TVN_SESSION_SAME_SITE', 'Lax'),
-    'idle_timeout'     => env_int('TVN_SESSION_IDLE', 1800),
-    'absolute_timeout' => env_int('TVN_SESSION_ABSOLUTE', 43200),
-    'fingerprint'      => true,
-    'csrf' => [
-        // 🔒 لایهٔ API (token/bearer auth) و endpoint احراز کانال بلادرنگ
-        // از CSRF معاف‌اند (DOC-044/DOC-045) — مانند قرارداد رایج api-group.
-        // 🔒 callback/notify پرداخت: redirect سرور-به-سرور درگاه‌ها بدون توکن
-        // جلسهٔ ما می‌آیند؛ اصالت با verify از API درگاه + امضای IPN تضمین
-        // می‌شود نه CSRF (DOC-073 §4/§7).
-        'except' => ['api/*', 'broadcasting/auth', 'payment/callback', 'payment/notify/*'],   // مسیرهای معاف (webhook و …)
+    /*| پیش‌فرض موتور (driver/store یا حالت فعال) */
+    'default' => env('SESSION_DEFAULT', 'array'),
+
+    /*| لیست درایورها */
+    'drivers' => [
+        'array' => [
+            // پیکربندی درایور array
+            'enabled' => true,
+        ],
+        'file' => [
+            // پیکربندی درایور file
+            'enabled' => true,
+        ],
+        'cookie' => [
+            // پیکربندی درایور cookie
+            'enabled' => true,
+        ],
+        'database' => [
+            // پیکربندی درایور database
+            'enabled' => true,
+        ],
+        'redis' => [
+            // پیکربندی درایور redis
+            'enabled' => true,
+        ],
+    ],
+
+    /*| کلید کش (در صورت استفاده) */
+    'prefix' => env('SESSION_PREFIX', 'session:'),
+
+    /*| تنظیمات لاگ */
+    'log' => [
+        'channel' => env('SESSION_LOG_CHANNEL', 'session'),
+    ],
+
+    /*| Facade */
+    'facade' => [
+        'name' => 'Session',
+        'accessor' => 'session',
+    ],
+
+    /*| سایر کلیدها (طبق مستندات) */
+    'options' => [
+        // TODO: کلیدهای اضافی طبق سند §۶ (پیکربندی)
     ],
 ];

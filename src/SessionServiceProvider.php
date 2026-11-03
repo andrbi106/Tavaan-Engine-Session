@@ -5,64 +5,51 @@ declare(strict_types=1);
 namespace Tavaan\Engine\Session;
 
 use Tavaan\Core\Contracts\Container\ContainerInterface;
+use Tavaan\Core\Contracts\Config\RepositoryInterface as ConfigRepository;
+use Tavaan\Engine\Session\Contracts\SessionInterface;
 use Tavaan\Core\Provider\ServiceProvider;
-use Tavaan\Engine\Crypt\Crypt;
-use Tavaan\Engine\Http\Cookie\CookieJar;
-use Tavaan\Engine\Session\Middleware\CsrfVerifyMiddleware;
-use Tavaan\Engine\Session\Middleware\ShareErrorsFromSessionMiddleware;
-use Tavaan\Engine\Session\Middleware\StartSessionMiddleware;
 
 /**
- * تَوان | Tavaan — Session
- * SessionServiceProvider — ثبت SessionManager/middlewareها/CookieJar.
- *
- * @api 1.0
- * @see docs/03-engines/session.md
+ * SessionServiceProvider — ثبت سرویس‌های موتور Session.
  */
 final class SessionServiceProvider extends ServiceProvider
 {
+    /**
+     * {@inheritdoc}
+     */
     public function register(): void
     {
-        $this->app->singleton(SessionManager::class, static function (ContainerInterface $c): SessionManager {
-            return new SessionManager(
-                $c->bound('config') ? $c->make('config') : null,
-                $c->bound(Crypt::class) ? $c->make(Crypt::class) : null,
-            );
+        $this->app->singleton(SessionInterface::class, function (ContainerInterface $app) {
+            /** @var ConfigRepository $config */
+            $config = $app->get(ConfigRepository::class);
+            return new Session($config);
         });
-
-        // CookieJar (موتور cookie)
-        $this->app->singleton(CookieJar::class, static function (ContainerInterface $c): CookieJar {
-            $config = $c->bound('config') ? $c->make('config') : null;
-
-            return new CookieJar(
-                $c->bound(Crypt::class) ? $c->make(Crypt::class) : null,
-                (bool) ($config?->get('session.secure', false) ?? false),
-                ($config?->get('session.domain')) ?: null,
-                (string) ($config?->get('session.same_site', 'Lax') ?? 'Lax'),
-            );
-        });
-        $this->app->alias(CookieJar::class, 'cookie');
-
-        $this->app->singleton(StartSessionMiddleware::class, static function (ContainerInterface $c): StartSessionMiddleware {
-            return new StartSessionMiddleware(
-                $c->make(SessionManager::class),
-                $c,
-                $c->bound('config') ? $c->make('config') : null,
-            );
-        });
-
-        $this->app->singleton(CsrfVerifyMiddleware::class, static function (ContainerInterface $c): CsrfVerifyMiddleware {
-            $except = $c->bound('config') ? (array) $c->make('config')->get('session.csrf.except', []) : [];
-
-            return new CsrfVerifyMiddleware($except);
-        });
-
-        $this->app->singleton(ShareErrorsFromSessionMiddleware::class, static fn (ContainerInterface $c): ShareErrorsFromSessionMiddleware => new ShareErrorsFromSessionMiddleware($c));
     }
 
-    /** @return list<string> */
+    /**
+     * {@inheritdoc}
+     */
+    public function boot(): void
+    {
+        // ثبت Facade
+        $this->app->instance('session', $this->app->get(SessionInterface::class));
+
+        // ثبت commandها
+        $this->commands[] = \Tavaan\Engine\Session\Console\Session_clearCommand::class;
+
+        // ثبت درایورها (در صورت نیاز)
+        // درایورها به‌صورت lazy در زمان استفاده ساخته می‌شوند.
+
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function provides(): array
     {
-        return [SessionManager::class, CookieJar::class, 'cookie', StartSessionMiddleware::class];
+        return [
+            SessionInterface::class,
+            'session',
+        ];
     }
 }
