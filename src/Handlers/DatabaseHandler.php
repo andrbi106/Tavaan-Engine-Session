@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tavaan\Engine\Session\Handlers;
 
-use Tavaan\Core\Contracts\Database\ConnectionInterface;
+use Tavaan\Engine\Database\Contracts\ConnectionInterface;
 use Tavaan\Engine\Session\SessionHandlerInterface;
 
 /**

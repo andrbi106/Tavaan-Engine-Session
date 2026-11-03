@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tavaan\Engine\Session;
 
-use Tavaan\Core\Contracts\Config\RepositoryInterface;
-use Tavaan\Core\Contracts\Database\ConnectionInterface;
+use Tavaan\Engine\Config\Contracts\RepositoryInterface;
+use Tavaan\Engine\Database\Contracts\ConnectionInterface;
 use Tavaan\Core\Facade\Facade;
 use Tavaan\Engine\Crypt\Crypt;
 use Tavaan\Engine\Session\Handlers\ArrayHandler;
