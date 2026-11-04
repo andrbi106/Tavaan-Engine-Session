@@ -42,5 +42,6 @@
       "database",
       "cache"
     ]
-  }
+  },
+  "class": "Tavaan\\Engine\\Session\\SessionEngine"
 }

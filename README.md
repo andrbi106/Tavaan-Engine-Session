@@ -2,6 +2,8 @@
 
 > **نشست** — موتور Session در فریمورک تَوان
 
+این موتور از کلاس پایهٔ `Engine` (در [Tavaan-Engine-Core](https://github.com/andrbi106/Tavaan-Engine-Core)) ارث می‌برد.
+
 ## مشخصات
 
 | فیلد | مقدار |
@@ -11,43 +13,52 @@
 | عنوان فارسی | نشست |
 | نسخه | `0.1.0` |
 | namespace | `Tavaan\Engine\Session` |
-| نوع | `engine` |
-| Facade | `Session` (accessor: `session`) |
+| کلاس موتور | `Tavaan\Engine\Session\SessionEngine` |
+| Facade | Session (`session`) |
+
+## کلاس موتور
+
+```php
+namespace Tavaan\Engine\Session;
+
+use Tavaan\EngineCore\Engine as BaseEngine;
+use Tavaan\EngineCore\Contracts\EngineManifestInterface;
+
+final class SessionEngine extends BaseEngine
+{
+    public function __construct(EngineManifestInterface $manifest)
+    {
+        parent::__construct($manifest);
+    }
+
+    public function register(ContainerInterface $container): void
+    {
+        parent::register($container);
+        // bindingهای اختصاصی موتور
+    }
+
+    public function boot(): void
+    {
+        parent::boot();
+    }
+}
+```
+
+**فایل:** `src/SessionEngine.php`
 
 ## توضیحات
 
 همهٔ درایورها فعال: file/cookie/array/database (M3) + redis (M4 — روی موتور cache با fallback به file).
 
-## کلاس‌های اصلی
+## وابستگی‌ها
 
-- `src/Handlers/ArrayHandler.php`
-- `src/Handlers/CacheHandler.php`
-- `src/Handlers/CookieHandler.php`
-- `src/Handlers/DatabaseHandler.php`
-- `src/Handlers/FileHandler.php`
-- `src/Middleware/CsrfVerifyMiddleware.php`
-- `src/Middleware/ShareErrorsFromSessionMiddleware.php`
-- `src/Middleware/StartSessionMiddleware.php`
-- `src/SessionHandlerInterface.php`
-- `src/SessionManager.php`
-- `src/session.php`
+**موتورهای مورد‌نیاز:** `http`, `crypt`, `config`
+
+**موتورهای اختیاری:** `database`, `cache`
 
 ## Service Providerها
 
 - `Tavaan\Engine\Session\SessionServiceProvider`
-
-## وابستگی‌ها
-
-**موتورهای مورد‌نیاز:**
-
-- `http`
-- `crypt`
-- `config`
-
-**موتورهای اختیاری:**
-
-- `database`
-- `cache`
 
 ## جداول دیتابیس
 
@@ -57,28 +68,19 @@
 
 - `session:clear`
 
-## پیکربندی
+## سه درگاه ارتباط با سایر موتورها
 
-- فایل پیکربندی: `config/session.php`
-- کلید: `session`
+| درگاه | الگو | متدهای convenience |
+|---|---|---|
+| Container | pull-based DI | `make()`, `bound()` |
+| Events | pub/sub | `dispatch()`, `listen()` |
+| EngineBus | point-to-point RPC | `call()`, `offer()` |
 
 ## نصب
 
 ```bash
 git clone https://github.com/andrbi106/Tavaan-Engine-Session.git
 ```
-
-این موتور بخشی از فریمورک تَوان است و معمولاً به‌صورت مستقیم نصب نمی‌شود،
-بلکه توسط [Tavaan-Core](https://github.com/andrbi106/Tavaan-Core) مدیریت می‌شود.
-
-## روابط با سایر مخازن
-
-| مخزن | نقش |
-|---|---|
-| **`andrbi106/Tavaan-Engine-Session`** (این مخزن) | موتور Session |
-| `andrbi106/Tavaan-Engine-Core` | ساختار پایه + درگاه ارتباط موتورها |
-| `andrbi106/Tavaan-Core` | اسکلت اپلیکیشن + همهٔ موتورها |
-| `Derogaramin/Tavaan-Framework` | فریمورک مادر (monorepo) |
 
 ## مجوز
 
