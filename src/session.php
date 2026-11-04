@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-namespace Tavaan\Engine\Http\Session;
+namespace Tavaan\Engine\Session;
 
 final class Session
 {

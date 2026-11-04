@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Tavaan\Engine\Http\Session\Tests\Feature;
+namespace Tavaan\Engine\Session\Tests\Feature;
 
 use Tavaan\Testing\TestCase;
-use Tavaan\Engine\Http\Session\Session;
+use Tavaan\Engine\Session\Session;
 
 /**
  * Feature tests for the session engine.
